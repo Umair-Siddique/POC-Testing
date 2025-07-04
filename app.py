@@ -59,7 +59,7 @@ def search_companies(
     if company_type:
         results = results[results["Entity type"].str.contains(company_type, case=False, na=False)]
     
-    # --- FIX: Added logic for negative filtering ---
+
     if exclude_company_type:
         results = results[~results["Entity type"].str.contains(exclude_company_type, case=False, na=False)]
     
