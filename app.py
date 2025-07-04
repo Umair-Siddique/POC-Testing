@@ -205,6 +205,7 @@ def search_companies(
     """
     try:
         # Use a relative path that works with Streamlit's execution environment
+        # FIX: Corrected the filename to match the uploaded file
         file_path = "sample_rows.csv"
         df = pd.read_csv(file_path)
     except FileNotFoundError:
@@ -349,7 +350,20 @@ if prompt := st.chat_input("Ask a question..."):
             st.stop()
 
         if response_message.tool_calls:
-            st.session_state.messages.append(response_message)
+            # FIX: Convert the tool call message object to a dictionary before appending
+            assistant_message_dict = {
+                "role": "assistant",
+                "content": response_message.content,
+                "tool_calls": [
+                    {
+                        "id": tc.id,
+                        "type": tc.type,
+                        "function": {"name": tc.function.name, "arguments": tc.function.arguments}
+                    } for tc in response_message.tool_calls
+                ]
+            }
+            st.session_state.messages.append(assistant_message_dict)
+            
             tool_call = response_message.tool_calls[0]
             function_name = tool_call.function.name
 
